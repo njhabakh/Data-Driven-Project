@@ -1,9 +1,13 @@
 Data-Driven-Project
 ===================
 Project by Ajith Narendra Jhabakh.
+
 Three buildings with different electricity consumption patterns were chosen for analysis.
+
 The Model used to predict the load had two major features:
+
 1) A Time-of-week indicator variable and 
+
 2) A Piecewise continuous outdoor temperature function.
 
 
