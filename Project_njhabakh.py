@@ -19,7 +19,7 @@ data = np.genfromtxt('campusDemand.csv',delimiter=",",names=True,dtype=('a255',t
 
 # In[4]:
 
-data1
+dat
 
 
 # In[5]:
