@@ -11,5 +11,5 @@ The Model used to predict the load had two major features:
 2) A Piecewise continuous outdoor temperature function.
 
 
-Three scenarios were assumed for the respective buildings which includeOccupied state only,Unoccupiedstate onlyandBoth occupied and Unoccupied statesbased on certain assumptions on occupancy times.
+Three scenarios were assumed for the respective buildings which include Occupied state only, Unoccupied state only and Both occupied and Unoccupied statesbased on certain assumptions on occupancy times.
 The best fit was found using the minimum Root Sum of Square(RSS)values.
