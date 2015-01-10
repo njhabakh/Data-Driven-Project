@@ -26,7 +26,7 @@ data
 
 #Unique meter names, returning the starting indices and counts
 name, indices, counts  = np.unique(data['Point_name'] , return_index=True,return_counts=True)
-
+k=indices+counts-1
 
 # In[5]:
 
