@@ -6,7 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime as dt
-get_ipython().magic(u'matplotlib inline')
+%matplotlib inline
 
 
 #### Importing the Data pertaining to Campus Demand:
@@ -59,7 +59,7 @@ data0=data[data['Point_name']==name[0]] #Data only for power meter 'Baker Hall E
 
 # In[8]:
 #Power consumption of all meters in the given data-set:
-fig = plt.figure(figsize=(30,40)) # A 20 inch x 20 inch figure box
+fig = plt.figure(figsize=(30,40))
 for meter,i in zip(name,range(len(name))):
     plt.subplot(7,1,i+1) # 3 rows and 4 columns of subplots
     plt.plot(data[data['Point_name']==meter]['Time'],data[data['Point_name']==meter]['Value'])
