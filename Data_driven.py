@@ -129,73 +129,43 @@ time_meter0=data0['Time']
 
 # In[15]:
 
-#Time of temperature is Key and should lie in between the timestamps of power meters or have the same start points:
-time_new3=[];time_new2=[];time_new0=[]; #Temporary time variables
-F_new3=[];F_new2=[];F_new0=[]; #Temporary Temperature variables
-
-for i in range(0,len(time_temp3)-1):
-    if(time_temp3[i]<time_meter3[len(time_meter3)-1] and time_temp3[i]>time_meter3[0] ):
-        time_new3.append(time_temp3[i])
-        F_new3.append(F_temp3[i])
-for i in range(0,len(time_temp2)-1):        
-    if(time_temp2[i]<time_meter2[len(time_meter2)-1] and time_temp2[i]>time_meter2[0] ):
-        time_new2.append(time_temp2[i])
-        F_new2.append(F_temp2[i])
-for i in range(0,len(time_temp0)-1):
-    if(time_temp0[i]<time_meter0[len(time_meter0)-1] and time_temp0[i]>time_meter0[0] ):
-        time_new0.append(time_temp0[i])
-        F_new0.append(F_temp0[i])
-
-#Storing the new timestamps based on the above conditions        
-time_temp3=time_new3
-F_temp3=F_new3
-time_temp2=time_new2
-F_temp2=F_new2
-time_temp0=time_new0
-F_temp0=F_new0
+#For all the meters
+time_new=[];F_new=[];data_new=['Time','Power','Temperature']
+index=[];n=0;index.append(n);count=[]
+for j in range(0,len(name)):
+    time_new=[]
+    F_new=[]
+    
+    for i in range(0,len(time_temp)-1):
+        if(time_temp[i]<data['Time'][k[j]] and time_temp[i]>data['Time'][indices[j]] ):
+            #time for each meter in range of temperature
+            time_new.append(time_temp[i])
+            F_new.append(F_temp[i])
+            n=n+1
+    index.append(n)
+    #Converting timestamp of meter and temperature to a numerical value for interpolation
+    Time_meter=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in data['Time'][indices[j]:k[j]]]
+    Time_temp=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_new]
+    clean_power=np.interp(Time_temp,Time_meter,data['Value'][indices[j]:k[j]])
+    #Storing all relevant data including timestamp, Power and Temperature for each Meter:
+    clean_data=np.vstack((time_new,clean_power,F_new)).T
+    data_new=np.vstack((data_new,clean_data))
+    count.append(index[j+1]-index[j])
 
 
-# In[16]:
 
-#Converting timestamp of meter and temperature to a numerical value for interpolation
-#Meter 3
-Time_meter3=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_meter3]
-Time_temp3=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_temp3]
-#Meter 2
-Time_meter2=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_meter2]
-Time_temp2=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_temp2]
-#Meter 0
-Time_meter0=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_meter0]
-Time_temp0=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_temp0]
-
-
-# In[17]:
-
-#Linear interpolation of Power
-#Meter 3
-clean_power3=np.interp(Time_temp3,Time_meter3,power_meter3)
-#Meter 2
-clean_power2=np.interp(Time_temp2,Time_meter2,power_meter2) 
-#Meter 0
-clean_power0=np.interp(Time_temp0,Time_meter0,power_meter0) 
 
 
 # In[18]:
 
-#Storing all relevant data including timestamp, Power and Temperature for each Meter:
-#Meter 3
-clean_data3=np.vstack((time_temp3,clean_power3,F_temp3)).T 
-#Meter 2
-clean_data2=np.vstack((time_temp2,clean_power2,F_temp2)).T 
-#Meter 0
-clean_data0=np.vstack((time_temp0,clean_power0,F_temp0)).T 
+
+
 
 
 # In[19]:
 
-print "Number of days for "+str( name[3])+" : "+str((clean_data3[len(clean_data3)-1][0]-clean_data3[0][0]).days)
-print "Number of days for  "+str( name[2])+" : "+str((clean_data2[len(clean_data2)-1][0]-clean_data2[0][0]).days)
-print "Number of days for  "+str( name[0])+" : "+str((clean_data0[len(clean_data0)-1][0]-clean_data0[0][0]).days)
+for i in range(len(name)):
+    print "Number of days for "+str( name[i])+" : "+str((data_new[index[i+1]][0]-data_new[index[i]+1][0]).days)
 
 
 ### Near Base and Near peak Load:
@@ -217,84 +187,49 @@ timestamp0=[t.minute+t.hour*60 for t in time_temp0]
 
 # In[21]:
 
-#End of day to calculate 97.5th and 2.5th percentile for each day based on the index values
-indices3=[];indices2=[];indices0=[]
-indices3.append(0)
-indices2.append(0)
-indices0.append(0)
-
-Max=np.max(timestamp3)#Same for all timestamps
-#Meter 3
-for i in range(len(time_temp3)-1):
-    if(timestamp3[i]==Max):#Which would mean end of the day
-        indices3.append(i)
-indices3.append(len(time_temp3)-1) 
-#Meter 2
-for i in range(len(time_temp2)-1):
-    if(timestamp2[i]==Max):
-        indices2.append(i)
-indices2.append(len(time_temp2)-1) 
-#Meter 0
-for i in range(len(time_temp0)-1):
-    if(timestamp0[i]==Max):
-        indices0.append(i)
-indices0.append(len(time_temp0)-1) 
+#Near Base and Near Peak loads for all the meters
+q95=[[[] for i in range(1)] for j in range(7)];
+q5=[[[] for i in range(1)] for j in range(7)];
+Q95=[[[] for i in range(1)] for j in range(7)]
+Q5=[[[] for i in range(1)] for j in range(7)]
+for j in range(len(name)):
+    indices=[0]
+    timestamp=[(data_new[t][0]).minute+(data_new[t][0]).hour*60 for t in range(index[j]+1,index[j+1])]
+    Max=np.max(timestamp)
+    for i in range(count[j]-1):
+        if(timestamp[i]==Max): #Which would mean end of the day
+            indices.append(i)
+    indices.append(index[j+1])
+    for k in range(len(indices)-2):
+        power=[data_new[i][1] for i in range(index[j]+indices[k]+1,index[j]+indices[k+1]+1)]
+        q95[j].append(np.percentile(power, [97.5]))
+        q5[j].append(np.percentile(power, [2.5]))
 
 
-# In[22]:
-
-#Finds the percentile for the given day based on the indices
-q95_3=[];q5_3=[];q95_2=[];q5_2=[];q95_0=[];q5_0=[];
-#Meter 3
-for i in range(0,len(indices3)-2):
-    q95_3.append(np.percentile(clean_power3[indices3[i]:indices3[i+1]], [97.5]))
-    q5_3.append(np.percentile(clean_power3[indices3[i]:indices3[i+1]], [2.5]))
-#Meter 2   
-for i in range(0,len(indices2)-2):
-    q95_2.append(np.percentile(clean_power2[indices2[i]:indices2[i+1]], [97.5]))
-    q5_2.append(np.percentile(clean_power2[indices2[i]:indices2[i+1]], [2.5]))
-#Meter 0    
-for i in range(0,len(indices0)-2):
-    q95_0.append(np.percentile(clean_power0[indices0[i]:indices0[i+1]], [97.5]))
-    q5_0.append(np.percentile(clean_power0[indices0[i]:indices0[i+1]], [2.5]))
+for i in range(7):
+    q95[i].remove([])
+    q5[i].remove([])
 
 
 # In[23]:
 
-#X-Axis is weekday for the Near Base and Near Peak Load.
-weekday3=np.arange(0,len(q95_3))
-weekday2=np.arange(0,len(q95_2))
-weekday0=np.arange(0,len(q95_0))
+#Weekdays for each meter readings
+weekday=[[[] for i in range(1)] for j in range(7)]
+for i in range(7):
+    weekday[i]=np.arange(0,len(q95[i]))
 
 
 # In[24]:
 
 # Plotting the near base and Near Peak Load.
-fig1 = plt.figure(figsize=(10,4))
-plt.plot(weekday3,q95_3,'-',label='Near Peak')
-plt.plot(weekday3,q5_3,'-',label='Near Base')
-plt.title(name[3])
-plt.xlabel('Weekday')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
-
-fig2 = plt.figure(figsize=(10,4))
-plt.plot(weekday2,q95_2,'-',label='Near Peak')
-plt.plot(weekday2,q5_2,'-',label='Near Base')
-plt.title(name[2])
-plt.xlabel('Weekday')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
-
-fig3 = plt.figure(figsize=(10,4))
-plt.plot(weekday0,q95_0,'-',label='Near Peak')
-plt.plot(weekday0,q5_0,'-',label='Near Base')
-plt.title(name[0])
-plt.xlabel('Weekday')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+fig = plt.figure(figsize=(30,40)) # A 20 inch x 20 inch figure box
+for i in range(len(name)):
+    plt.subplot(7,1,i+1) # 3 rows and 4 columns of subplots
+    plt.plot(weekday[i],q95[i],'-',label='Near Peak')
+    plt.plot(weekday[i],q5[i],'-',label='Near Base')
+    plt.title(name[i])
+    plt.xlabel('Timestamp')
+    plt.ylabel('Power')
 
 
 ## Load Prediction:
