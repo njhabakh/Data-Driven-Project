@@ -25,14 +25,25 @@ data
 # In[4]:
 
 #Unique meter names, returning the starting indices and counts
-name, indices, counts  = np.unique(data['Point_name'] , return_index=True,return_counts=True)
-k=indices+counts-1
+name, ind, c  = np.unique(data['Point_name'] , return_index=True,return_counts=True)
+
+#Finding the gaps in the timestamps
+fig = plt.figure(figsize=(20,30)) # A 20 inch x 20 inch figure box
+for meter,i in zip(name,range(len(name))):
+    plt.subplot(4,2,i+1) # 3 rows and 4 columns of subplots
+    plt.plot(data[data['Point_name']==meter]['Time'])
+    plt.title(meter)
+    plt.xlabel('Timestamp')
+    plt.ylabel('Timestamp')
+
+#Indices values
+k=ind+c-1
 
 # In[5]:
 
 #Unique Meter Name: Duration
 for i in range(len(name)):
-    print str(name[i])+" from "+str(data[indices[i]]['Time'])+" to "+str(data[indices[i]+counts[i]-1]['Time'])+" : "+str(data[indices[i]+counts[i]-1]['Time']-data[indices[i]]['Time'])
+    print str(name[i])+" from "+str(data[ind[i]]['Time'])+" to "+str(data[ind[i]+counts[i]-1]['Time'])+" : "+str(data[ind[i]+counts[i]-1]['Time']-data[ind[i]]['Time'])
     
 
 
@@ -129,7 +140,7 @@ time_meter0=data0['Time']
 
 # In[15]:
 
-#For all the meters
+#for all the meters
 time_new=[];F_new=[];data_new=['Time','Power','Temperature']
 index=[];n=0;index.append(n);count=[]
 for j in range(0,len(name)):
@@ -137,21 +148,20 @@ for j in range(0,len(name)):
     F_new=[]
     
     for i in range(0,len(time_temp)-1):
-        if(time_temp[i]<data['Time'][k[j]] and time_temp[i]>data['Time'][indices[j]] ):
+        if(time_temp[i]<data['Time'][k[j]] and time_temp[i]>data['Time'][ind[j]] ):
             #time for each meter in range of temperature
             time_new.append(time_temp[i])
             F_new.append(F_temp[i])
             n=n+1
     index.append(n)
     #Converting timestamp of meter and temperature to a numerical value for interpolation
-    Time_meter=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in data['Time'][indices[j]:k[j]]]
+    Time_meter=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in data['Time'][ind[j]:k[j]]]
     Time_temp=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_new]
-    clean_power=np.interp(Time_temp,Time_meter,data['Value'][indices[j]:k[j]])
+    clean_power=np.interp(Time_temp,Time_meter,data['Value'][ind[j]:k[j]])
     #Storing all relevant data including timestamp, Power and Temperature for each Meter:
     clean_data=np.vstack((time_new,clean_power,F_new)).T
     data_new=np.vstack((data_new,clean_data))
     count.append(index[j+1]-index[j])
-
 
 
 
