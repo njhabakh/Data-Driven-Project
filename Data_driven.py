@@ -154,7 +154,7 @@ for j in range(0,len(name)):
             F_new.append(F_temp[i])
             n=n+1
     index.append(n)
-    #Converting timestamp of meter and temperature to a numerical value for interpolation
+    #converting timestamp of meter and temperature to a numerical value for interpolation
     Time_meter=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in data['Time'][ind[j]:k[j]]]
     Time_temp=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_new]
     clean_power=np.interp(Time_temp,Time_meter,data['Value'][ind[j]:k[j]])
