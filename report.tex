@@ -1,0 +1,438 @@
+
+\documentclass[a4paper,11pt]{article}
+%--------------------------------------------------------------------
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage[export]{adjustbox} 
+\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{amsmath}
+\usepackage{wrapfig,lipsum,booktabs}
+\usepackage{float}
+\floatstyle{boxed}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[font=small,labelfont=bf]{caption}
+\RequirePackage{color,graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour, linkcolor=linkcolour}
+\fontfamily{times}
+\usepackage[english]{times}
+\usepackage{fancyhdr}
+%-------------------------------------------------------------------
+\pagestyle{fancy}
+
+\renewcommand{\headrulewidth}{1pt}
+\rhead{Narendra Jhabakh : njhabakh}
+\lhead{Data-Driven Energy Management of Buildings }
+%-------------------------------------------------------------------
+\begin{document}
+\begin{titlepage}
+\begin{center}
+\textsc{\LARGE Data-Driven Energy Management of Buildings }\\[0.5cm]
+\textsc{\Large 12:750}\\[2.5cm]
+\textsc{\LARGE Final Project }\\[1.5cm]
+{ \huge \bfseries Application of a  Load Prediction Model to Buildings at Carnegie Mellon University \\[6.4cm] }
+% Author and supervisor
+\noindent
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+A. Narendra \textsc{Jhabakh}
+\end{flushleft}
+\end{minipage}%
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Assistant Professer: } \\
+Mario \textsc{Berges}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large \today}
+
+\end{center}
+\end{titlepage}
+
+
+%\maketitle
+\tableofcontents
+\newpage
+\section{Executive Summary}
+There is a lot of available data, but there is no one looking at the data. Many real life problems can be solved by giving meaning to this data. In the domain of Building Energy Management, Data can be used to find solutions, as to where Electricity can be saved and where extra retrofits may be required.\\
+This report is aimed at replicating the model developed in a research paper$^{[1]}$ and applying it to a different set of buildings(which have different patterns of electricity consumption).
+The buildings considered are:\\\\
+1) Main Campus Building (Electric Meter: 'Electric kW Calculations - Main Campus kW')\\
+2) Baker Hall (Electric Meter: 'Baker Hall Electric (Shark 29) - Demand Watts ') \\
+3) Doherty Apartments (Electric Meter: 'Doherty Apts Electric (Shark 11) - Demand Watts')\\\\
+The model developed in the paper, consists of two major features, a) A time of week indicator variable and b) A piecewise linear and continuous outdoor air temperature dependence. It consists of two loading conditions, a) Occupied and b) Unoccupied, which are considered at the same time based on occupancy times.\\ In this report, three models are used, a model considering:\\\\ \textbf{i) The Occupied condition} (at all times),\\ \textbf{ii) The Unoccupied condition} (at all times) and\\ \textbf{iii) The Occupied and Unoccupied conditions} ( based on assumptions on the occupancy times).\\\\
+It was seen that the best fit model for the three buildings is either \textbf{ii)} or \textbf{i)} which brings us to the question on whether the piece - wise temperature continuity was required to construct a best fit model. But model \textbf{iii)} mainly depends on the occupancy patterns which are assumed for this report. With more data and proper occupancy times, the proposed model should be able to give better results.   
+
+\section{Proposals}
+The following are the proposals for this report:
+\begin{enumerate}
+\itemsep0em
+\item Replicate the complete procedure of Load prediction as is in the paper$^{[1]}$.
+\item Validate the model with the select set of buildings by using the Occupied, and Unoccupied conditions separately first and then together.
+\item Conclude on which method gives the best fit model.
+\end{enumerate}
+\section{Data-set}
+The Following two Data-sets were utilized for this project:
+\subsection{ Energy Consumption of Buildings:}
+Following are the properties of this data set[2]:
+\begin{itemize}
+\itemsep0em
+\item This data-set consists of Building energy consumption from six different electricity meters at Carnegie Mellon University.
+\item The Data-set consists of 744,892 tuples, and each tuple consists of the Meter Name, Time Stamp and Electricity Consumption(in Watts). The first two tuples of the data-set is as follows:\\
+\emph{('Porter Hall Electric (Shark 30) - Watts', datetime.datetime(2014, 9, 10, 0, 0, 50), 80635.421875),\\('Porter Hall Electric (Shark 30) - Watts', datetime.datetime(2014, 9, 10, 0, 1, 50), 77046.9921875),\\:}
+\item The Seven different meters are as follows with their respective duration of timestamps(the readings are spaced by a gap of one minute for each meter):
+\begin{enumerate}
+\itemsep0em
+\item Baker Hall Electric (Shark 29) - Demand Watts :271 days, 15:01:01
+\item Baker Hall Electric (Shark 29) - Watts:7 days, 22:43:04
+\item Doherty Apts Electric (Shark 11) - Demand Watts:31 days, 12:38:32
+\item Electric kW Calculations - Main Campus kW:365 days, 22:52:57
+\item Porter Hall Electric (Shark 30) - Watts:61 days, 22:41:38
+\item Scaife Hall Electric (Shark 21) - Watts:31 days, 22:45:13
+\item University Center Electric (Shark 34) - Watts:7 days, 22:48:04
+\end{enumerate}
+\item Following are the Load profiles and timestamps of the chosen 3
+meters for this project:
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+                \includegraphics[width=1.4\textwidth]{1a}
+                \caption{Load Profile }
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=0.9\textwidth]{1a2}
+                \caption{Timestamp}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Main Campus Building}\label{fig:animals}
+\end{figure}
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=1.8\textwidth]{1b}
+                \caption{Load Profile }
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=.9\textwidth]{1b2}
+                \caption{Timestamp}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Baker Hall}\label{fig:animals}
+\end{figure}
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+                \includegraphics[width=1.4\textwidth]{1c}
+                \caption{Load Profile }
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=0.9\textwidth]{1c2}
+                \caption{Timestamp}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Doherty Apartments}\label{fig:animals}
+\end{figure}
+\end{itemize}
+\subsection{Pittsburgh Temperature data:}
+Properties of the data-set[3]:
+\begin{itemize}
+\item This data consists of 105,409 tuples, each tuple consists of timestamps(in gaps of five minutes), which are linear(Fig. 4) and the corresponding temperature.\\
+\emph{(datetime.datetime(2013, 11, 10, 5, 0), '54.43'),\\ (datetime.datetime(2013, 11, 10, 5, 5), '54.691'),\\:}
+\begin{figure}[H]
+\centering
+  \includegraphics[scale=0.4]{1d}
+  \caption{Timestamp of Temperature data}
+\end{figure}
+\subsection{Data-Cleansing:}
+\begin{itemize}
+\itemsep0em
+\item Matching timestamps: Since the timestamps for the meters and the temperature recordings are different they are matched having the same start and end time.
+\item Linear interpolation: The intervals between readings of the temperature is 15 minutes whereas its a minute for the meters. Also there are gaps in readings in the case of the meters. Hence, the readings are linearly interpolated with respect to the timestamps of the Temperature readings.
+\end{itemize}
+\section{Load Shape Parameters and Temperature Dependence}
+The paper$^{[1]}$ defines Near Peak and Near Base Loads, which summarize the extreme events.\\
+\textbf{Near Base Load}: This is the 2.5$^{th}$ percentile of daily load.\\
+\textbf{Near Peak Load}: This is the 97.5$^{th}$ percentile of daily load
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{2a}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{2b}
+                \caption{Doherty ApartmentsBaker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{2c}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Near Base and Near Peak Loads}\label{fig:animals}
+\end{figure}
+\noindent From the above figures its seen that:
+The Near Peak loads for the meters, Baker Hall electric(Fig. 5c) and Main Campus(Fig. 5b) are varying continuously which is not the case for their Near Base Loads, whereas the Near Peak and Near Base loads for the meter, Doherty Apartements(Fig, 5b) is relatively constant.
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.25\textwidth}
+                \includegraphics[width=\textwidth]{4a}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hspace{-10pt}
+        \begin{subfigure}[b]{0.25\textwidth}
+                \includegraphics[width=\textwidth]{4b}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+\hspace{-10pt}      
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{4c}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Temperature dependence}\label{fig:animals}
+\end{figure}
+\noindent The temperature dependence for the Main Campus and Baker Hall(Figs. 6a and 6c) are clearly visible but not very distinct as they are joint but in the case of Doherty Apartments(Fig. 6b) there is no clear temperature dependence. This may be due to the fact that there is only one month of data present for Doherty Apartments which is not the case for the other two meters.
+\section{Load Prediction}
+\subsection{Piece-wise Linear and Continuous outdoor temperature:}
+To achieve piecewise linearity and continuity, the outside air
+temperature at time t￼ (which occurs in time-of-week interval ), ￼ T(t$_i$) ￼ , is broken into six component temperatures(between the minima and the maxima),T$_{c,j}$(t$_i$)
+with j$\in$(1,6).
+Each T$_{c,j}$(t$_i$) is multiplied by $\beta_j$￼ ￼ and then summed to determine the temperature-dependent load. B$_k$, k$\in$(1,5) is considered to be the bounds of the temperature intervals.\\
+The respective T$_{c,i}$ are found based on the following algorithm as in the paper$^{[1]}$:
+\begin{enumerate}
+\itemsep0em 
+\item If T(t$_i$) $>$ B$_1$, then T$_{c,1}$(t$_i$) = T(t$_i$) and T$_{c,m}$(t$_i$) = 0 for m$\in$(2,6). 
+\item For n = 2...6, if T(t$_i$) $>$ B$_n$ then T$_{c,n}$(t$_i$) = B$_n$-B$_{n-1}$ and T$_{c,m}$(t$_i$) = 0 for m$\in$(n+1,6).
+\item If T(t$_i$) $>$ B$_5$,then T$_{c,5}$(t$_i$) = B$_5$-B$_4$ and T$_{c,6}$(t$_i$) = T(t$_i$) - B$_5$.
+\end{enumerate}
+\subsection{Linear Regression:}
+A week(Mon-Fri) is divided in 15 minute time intervals which has a separate regression coefficient($\alpha_i$) for each time stamp of 15 minutes.\\
+Based on the model used in the paper$^{[1]}$, Occupied load($L_o$) and Unoccupied load($L_u$) for all facilities are computed as follows:
+\begin{align}
+\hat{L}_o(t_i,(T(t_i)))=\alpha_i + \sum_{j=1}^{j=6} \beta_jT_{c,j}(t_i)\\
+\hat{L}_u(t_i,(T(t_i)))=\alpha_i + \beta_\mu T(t_i)
+\end{align}
+\section{Results}
+\subsection{Occupied State:}
+In this case a model is fit only considering eq(1), for all the three meters, thus having 486 parameters($\alpha_i$, i$\in$[1,480] and $\beta_j$, j$\in$[1,6]). The following results are obtained:
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{a1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{a2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{a3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Occupied only condition}\label{fig:animals}
+\end{figure}
+
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3a1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3a2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{3a3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Occupied only condition, for two weeks}\label{fig:animals}
+\end{figure}
+
+\subsection{Unoccupied State:}
+In this case a model is fit only considering eq(2), for all the three meters, thus having 481 parameters($\alpha_i$, i$\in$[1,480] and $\beta_{\mu}$). The following results are obtained:
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{b1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{b2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{b3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Unoccupied only condition}\label{fig:animals}
+\end{figure}
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3b1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3b2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{3b3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Unoccupied only condition, for two weeks}\label{fig:animals}
+\end{figure}
+
+\subsection{Occupied and Unoccupied States:}
+In this case a model is fit only considering eq(1), for all the three meters, thus having 487 parameters($\alpha_i$, i$\in$[1,480],  $\beta_j$, j$\in$[1,6] and $\beta_{\mu}$).
+The following assumptions are considered for occupancy times:
+\begin{itemize}
+\itemsep0em
+\item The time of occupancy for the Main campus and Baker hall is in between 9am - 6pm.
+\item The time of Occupancy for Doherty Apartments is in between 6pm- 9am(the opposite of what is assumed for the other two meters as it is a residential(hostel) building). 
+\end{itemize}
+Based on the above assumptions, the following results are obtained:
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{c1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{c2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{c3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Occupied and Unoccupied conditions}\label{fig:animals}
+\end{figure}
+
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3c1}
+                \caption{Main Campus}
+                \label{fig:Load 1}
+        \end{subfigure}%
+\hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{3c2}
+                \caption{Baker Hall}
+                \label{fig:tiger}
+        \end{subfigure}
+ \hfill       
+        \begin{subfigure}[b]{0.35\textwidth}
+                \includegraphics[width=\textwidth]{3c3}
+                \caption{Doherty Apartments}
+                \label{fig:tiger}
+        \end{subfigure}
+        \caption{Occupied and Unoccupied conditions, for two weeks}\label{fig:animals}
+\end{figure}
+
+\end{itemize}
+Finding the RSS(Root Sum of Squares) for each model.
+\begin{align}
+RSS=((L_{model})^2 - (L_{actual})^2)
+\end{align}
+The RSS values are computed(from eq (3)) and is shown in Table 1, with the ones in bold having the least RSS value for the respective buildings:
+
+\begin{table}[H]
+  \centering
+  \caption{RSS Values for the different models}
+    \begin{tabular}{lrrr}
+    \toprule
+    \textbf{Model} & \textbf{Occupied Only} & \textbf{Unoccupied Only} & \textbf{Occupied and Unoccupied} \\
+    \midrule
+    \textbf{Main Campus} & \textbf{218609} & 221314 & 425629 \\
+    \textbf{Baker Hall} & 2911252 & \textbf{2197980} & 2557667 \\
+    \textbf{Doherty Apartments} & 628348 & \textbf{88248} & 120500 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:addlabel}%
+\end{table}%
+
+
+\section{Discussion}
+The following can be inferred from the above results and analysis:
+\begin{enumerate}
+\itemsep0em
+\item In the occupied model (which consists of the piece-wise linear time function), load prediction for Doherty Apartments is very poor. This might be due to the fact that there is no proper temperature correlation for this particular building as seen in Figure 4b.
+\item The model is developed on a weekly basis, in the sense that all the parameters correspond to one week's data. Also the only input variable to the model is Temperature data. This is precisely the reason why the model prediction is poor when there are sudden changes in the load characteristics (last two weeks in the meter3 readings, Fig. 7a and 9a)
+\item In the Unoccupied model, load prediction for Doherty Apartments turned out to be much better, which reinforces its characteristics to the outdoor temperature relationship as in the previous point. 
+\item The load prediction model obtained by taking into consideration both occupied and unoccupied, does not produce good results (based on RSS values). This may be due to the following two reasons:
+\begin{itemize}
+\itemsep0em
+\item Exact occupancy times are not known,
+\item Equal weights are utilized for occupancy and  no occupancy load situations while predicting the model.
+\end{itemize}
+\end{enumerate}
+\section{Future Work}
+\begin{enumerate}
+\itemsep0em
+\item The data analyzed for Doherty Apartments, was only for a month. Different results could be obtained by considering yearly data. 
+\item The Analysis can be re-run with the exact occupancy time intervals for each meter(As seen with the RSS values).
+\item It would be interesting to see if this model can be applied to other Load consuming entities, Electrical appliances for example.
+\end{enumerate}
+\section{References}
+[1]: "Quantifying Changes in Building Electricity Use, With Application to Demand Response" by Johanna et.al.
+\section{Sources}
+[2]: CampusDemand.csv
+
+\noindent [3]: IW.Weather.Kpit56.Csv.Temp.csv
+\end{document}
+
