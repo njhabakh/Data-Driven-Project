@@ -60,14 +60,6 @@ for meter,i in zip(name,range(len(name))):
 
 
 #### Segregating the data based on the meters:
-
-# In[7]:
-
-data3=data[data['Point_name']==name[3]] #Data only for power meter'Electric kW Calculations - Main Campus kW'
-data2=data[data['Point_name']==name[2]] #Data only for power meter 'Doherty Apts Electric (Shark 11) - Demand Watts'
-data0=data[data['Point_name']==name[0]] #Data only for power meter 'Baker Hall Electric (Shark 29) - Demand Watts '
-
-
 # In[8]:
 #Power consumption of all meters in the given data-set:
 fig = plt.figure(figsize=(30,40))
@@ -87,7 +79,6 @@ for meter,i in zip(name,range(len(name))):
 dateConverter = lambda d : dt.datetime.strptime(d,'%Y-%m-%d %H:%M:%S')
 temp = np.genfromtxt('Temp.csv',delimiter=",",dtype=(type(dt),float),converters={0: dateConverter},names=['timestamp', 'TempF'], 
                  skiprows=1)
-temp[0:5]
 
 
 # In[10]:
@@ -118,25 +109,6 @@ F_temp3=F_temp2=F_temp0=[float(temp[i][1]) for i in range(len(temp))]
 
 #### Equating the timestamps for each meter(Start - End):
 
-# In[13]:
-
-#Printing the different timestamps to see thier difference
-print "Temperature Timestamp : "+ str(time_temp[0])+" to "+str(time_temp[len(time_temp)-1])
-print str(name[3])+" : "+ str(data3['Time'][0])+" to "+str(data3['Time'][len(data3)-1])
-print str(name[2])+" : "+ str(data2['Time'][0])+" to "+str(data2['Time'][len(data2)-1])
-print str(name[0])+" : "+ str(data0['Time'][0])+" to "+str(data0['Time'][len(data0)-1])
-
-
-# In[14]:
-
-#Storing the timestamp and power reading in 3 different variables for the three meters
-power_meter3=data3['Value']
-time_meter3=data3['Time']
-power_meter2=data2['Value']
-time_meter2=data2['Time']
-power_meter0=data0['Value']
-time_meter0=data0['Time']
-
 
 # In[15]:
 
@@ -154,10 +126,12 @@ for j in range(0,len(name)):
             F_new.append(F_temp[i])
             n=n+1
     index.append(n)
+
     #Converting timestamp of meter and temperature to a numerical value for interpolation
     Time_meter=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in data['Time'][ind[j]:k[j]]]
     Time_temp=[t.minute+t.hour*60+t.day*24*60+t.month*30*24*60+t.year*365*24*60 for t in time_new]
     clean_power=np.interp(Time_temp,Time_meter,data['Value'][ind[j]:k[j]])
+
     #Storing all relevant data including timestamp, Power and Temperature for each Meter:
     clean_data=np.vstack((time_new,clean_power,F_new)).T
     data_new=np.vstack((data_new,clean_data))
