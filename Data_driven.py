@@ -166,11 +166,6 @@ for j in range(0,len(name)):
 
 
 
-# In[18]:
-
-
-
-
 
 # In[19]:
 
