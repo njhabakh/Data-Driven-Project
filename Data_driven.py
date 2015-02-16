@@ -49,7 +49,7 @@ for i in range(len(name)):
 
 # In[6]:
 
-#Finding the gaps in the timestamps
+#Finding the gaps in the timestamps of meters
 fig = plt.figure(figsize=(20,30)) # A 20 inch x 20 inch figure box
 for meter,i in zip(name,range(len(name))):
     plt.subplot(4,2,i+1) # 3 rows and 4 columns of subplots
@@ -115,6 +115,7 @@ F_temp3=F_temp2=F_temp0=[float(temp[i][1]) for i in range(len(temp))]
 #for all the meters
 time_new=[];F_new=[];data_new=['Time','Power','Temperature']
 index=[];n=0;index.append(n);count=[]
+
 for j in range(0,len(name)):
     time_new=[]
     F_new=[]
@@ -153,17 +154,6 @@ for i in range(len(name)):
 # 
 # Near Peak Load: 97.5$^{th}$ percentile of Daily Load 
 
-# In[20]:
-
-#Converting timestamps to number of minutes in a day based on the given timetamps
-#Meter 3
-timestamp3=[t.minute+t.hour*60 for t in time_temp3]
-#Meter 2
-timestamp2=[t.minute+t.hour*60 for t in time_temp2]
-#Meter 0
-timestamp0=[t.minute+t.hour*60 for t in time_temp0]
-
-
 # In[21]:
 
 #Near Base and Near Peak loads for all the meters
@@ -183,6 +173,7 @@ for j in range(len(name)):
         power=[data_new[i][1] for i in range(index[j]+indices[k]+1,index[j]+indices[k+1]+1)]
         q95[j].append(np.percentile(power, [97.5]))
         q5[j].append(np.percentile(power, [2.5]))
+
 
 
 for i in range(7):
@@ -218,24 +209,16 @@ for i in range(len(name)):
 # In[25]:
 
 #Storing only the data pertaining to Mondays-Fridays
-test3=[];test2=[];test0=[];
+test=[];n=0;index_new=[];
+index_new.append(0);
 #Meter3
-for i in range(len(clean_data3)-1):
-    if(clean_data3[i][0].weekday()!=5 and clean_data3[i][0].weekday()!=6):
-       test3.append(clean_data3[i]) 
-#Meter2      
-for i in range(len(clean_data2)-1):
-    if(clean_data2[i][0].weekday()!=5 and clean_data2[i][0].weekday()!=6):
-       test2.append(clean_data2[i])
-        
-#Meter0
-for i in range(len(clean_data0)-1):
-    if(clean_data0[i][0].weekday()!=5 and clean_data0[i][0].weekday()!=6):
-       test0.append(clean_data0[i]) 
-        
-clean_data_3=test3
-clean_data_2=test2
-clean_data_0=test0
+for j in range(len(index)-1):
+    for i in range(index[j]+1,index[j+1]):
+        if(data_new1[i][0].weekday()!=5 and data_new1[i][0].weekday()!=6):
+            test.append(data_new1[i])
+            n=n+1;
+    index_new.append(n);
+
 
 
 ### Segregating Occupied and Unoccupied loads:
