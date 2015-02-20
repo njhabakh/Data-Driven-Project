@@ -224,100 +224,50 @@ for j in range(len(index)-1):
 ### Segregating Occupied and Unoccupied loads:
 
 # In[26]:
+#Assuming that the occupied times are in-between 8am - 7pm
+testo=[[[] for i in range(1)] for j in range(7)];
+testu=[[[] for i in range(1)] for j in range(7)];
 
-#Assuming the occupied durations for Meters 3(Main Campus) and 0(Baker Hall) to be between 9am-7pm and vise-versa for Meter 2(Doherty Apartments)
-clean_data3o=[];clean_data2o=[];clean_data0o=[];
-clean_data3u=[];clean_data2u=[];clean_data0u=[];
-#Meter3
-for i in range(len(clean_data_3)):
-    if(clean_data_3[i][0].hour > 8 and clean_data_3[i][0].hour<19 ):
-        clean_data3o.append(clean_data_3[i])
-    else:
-       clean_data3u.append(clean_data_3[i]) 
-#Meter2        
-for i in range(len(clean_data_0)):
-    if(clean_data_0[i][0].hour > 8 and clean_data_0[i][0].hour<19 ):
-        clean_data0o.append(clean_data_0[i])
-    else:
-       clean_data0u.append(clean_data_0[i]) 
-#Meter0
-for i in range(len(clean_data_2)):
-    if(clean_data_2[i][0].hour > 17 or clean_data_2[i][0].hour<10 ):
-        clean_data2o.append(clean_data_2[i])
-    else:
-       clean_data2u.append(clean_data_2[i]) 
-
+for j in range(len(name)):
+    for i in range(index_new[j],index_new[j+1]-1):
+        if(test[i][0].hour > 8 and test[i][0].hour<19 ):
+            testo[j].append(test[i])
+        else:
+            testu[j].append(test[i])
 
 # In[27]:
+#Storing the temp and power corredponding to each meter depending on occupancy:
+power_o=[[[] for i in range(1)] for j in range(7)];
+temp_o=[[[] for i in range(1)] for j in range(7)];
+temp_u=[[[] for i in range(1)] for j in range(7)];
+power_u=[[[] for i in range(1)] for j in range(7)];
 
-#Temperature, Power and Time for each meter(Mon-Fri), subscript o:occupied, subscript u: un occupied:
-#Meter3
-F_temp3o=[clean_data3o[i][2] for i in range(len(clean_data3o)-1) ]
-power_temp3o=[clean_data3o[i][1] for i in range(len(clean_data3o)-1) ]
-time_temp3o=[clean_data3o[i][0] for i in range(len(clean_data3o)-1) ]
-F_temp3u=[clean_data3u[i][2] for i in range(len(clean_data3u)-1) ]
-power_temp3u=[clean_data3u[i][1] for i in range(len(clean_data3u)-1) ]
-time_temp3u=[clean_data3u[i][0] for i in range(len(clean_data3u)-1) ]
-
-#Meter2
-F_temp2o=[clean_data2o[i][2] for i in range(len(clean_data2o)-1) ]
-power_temp2o=[clean_data2o[i][1] for i in range(len(clean_data2o)-1) ]
-time_temp2o=[clean_data2o[i][0] for i in range(len(clean_data2o)-1) ]
-F_temp2u=[clean_data2u[i][2] for i in range(len(clean_data2u)-1) ]
-power_temp2u=[clean_data2u[i][1] for i in range(len(clean_data2u)-1) ]
-time_temp2u=[clean_data2u[i][0] for i in range(len(clean_data2u)-1) ]
-
-#Meter0
-F_temp0o=[clean_data0o[i][2] for i in range(len(clean_data0o)-1) ]
-power_temp0o=[clean_data0o[i][1] for i in range(len(clean_data0o)-1) ]
-time_temp0o=[clean_data0o[i][0] for i in range(len(clean_data0o)-1) ]
-F_temp0u=[clean_data0u[i][2] for i in range(len(clean_data0u)-1) ]
-power_temp0u=[clean_data0u[i][1] for i in range(len(clean_data0u)-1) ]
-time_temp0u=[clean_data0u[i][0] for i in range(len(clean_data0u)-1) ]
+for i in range(len(testo)-1):
+    for j in range(len(testo[i])-1):
+        temp_o[i].append(testo[i][j][2])
+        power_o[i].append(testo[i][j][1])
+    
+    for j in range(len(testu[i])-1):
+        temp_u[i].append(testu[i][j][2])
+        power_u[i].append(testu[i][j][1])
 
 
-# In[28]:
+for i in range(7):
+    temp_o[i].remove([])
+    temp_u[i].remove([])
+    power_o[i].remove([])
+    power_u[i].remove([])
 
-#Corresponding power and time for each meter
-#Meter3
-time_temp_3=[clean_data_3[i][0] for i in range(len(clean_data_3)-1) ]
-power_temp_3=[clean_data_3[i][1] for i in range(len(clean_data_3)-1) ]
+#Printing the consumption profile based on occupancy times
 
-#Meter2
-time_temp_2=[clean_data_2[i][0] for i in range(len(clean_data_2)-1) ]
-power_temp_2=[clean_data_2[i][1] for i in range(len(clean_data_2)-1) ]
-
-#Meter0
-time_temp_0=[clean_data_0[i][0] for i in range(len(clean_data_0)-1) ]
-power_temp_0=[clean_data_0[i][1] for i in range(len(clean_data_0)-1) ]
-
-
-# In[29]:
-
-fig1 = plt.figure(figsize=(4,6))
-plt.plot(F_temp3o,power_temp3o,'r.',label='Occupied')
-plt.plot(F_temp3u,power_temp3u,'b.',label='Unoccupied')
-plt.title( name[3])
-plt.xlabel('Temperature ($^o$F)')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
-fig2 = plt.figure(figsize=(4,6))
-plt.plot(F_temp2o,power_temp2o,'r.',label='Occupied')
-plt.plot(F_temp2u,power_temp2u,'b.',label='Unoccupied')
-plt.title( name[2])
-plt.xlabel('Temperature ($^o$F)')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
-fig3 = plt.figure(figsize=(4,6))
-plt.plot(F_temp0o,power_temp0o,'r.',label='Occupied')
-plt.plot(F_temp0u,power_temp0u,'b.',label='Unoccupied')
-plt.title( name[0])
-plt.xlabel('Temperature ($^o$F)')
-plt.ylabel('Power in Watts')
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
+fig = plt.figure(figsize=(30,40)) # A 20 inch x 20 inch figure box
+for i in range(len(name)):
+    plt.subplot(7,1,i+1) # 3 rows and 4 columns of subplots
+    plt.plot(temp_o[i],power_o[i],'r.',label='Occupied')
+    plt.plot(temp_u[i],power_u[i],'b.',label='Unoccupied')
+    plt.title(name[i])
+    plt.xlabel('Temperature ($^o$F)')
+    plt.ylabel('Power in Watts')
 
 ### Piece wise Linear Time functions:
 
