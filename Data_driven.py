@@ -274,35 +274,38 @@ for i in range(len(name)):
 # In[30]:
 
 #6 Temperature-intervals for each timestamp between the maximum and minimum
-Ti3=[clean_data_3[i][2] for i in range(len(clean_data_3))]#Meter3
-Ti2=[clean_data_2[i][2] for i in range(len(clean_data_2))]#Meter2
-Ti0=[clean_data_0[i][2] for i in range(len(clean_data_0))]#Meter0
+Ti=[[[] for i in range(1)] for j in range(7)];
+step=[[[] for i in range(1)] for j in range(7)];
 
+for j in range(len(name)):
+    for i in range(index_new[j],index_new[j+1]-1):
+        Ti[j].append(test[i][2])
+for i in range(7):
+    Ti[i].remove([])
 
-step3=np.linspace(np.min(Ti3),np.max(Ti3),6)
-step2=np.linspace(np.min(Ti2),np.max(Ti2),6)
-step0=np.linspace(np.min(Ti0),np.max(Ti0),6)
+for i in range(len(Ti)):
+    k=np.linspace(np.min(Ti[i]),np.max(Ti[i]),6)
+    step[i].append(k)
 
-
-# In[31]:
+for i in range(7):
+    step[i].remove([])
 
 print "Temperature-intervals:\n"
-print str(name[3])+" : "+str(step3) 
-print str(name[2])+" : "+str(step2) 
-print str(name[0])+" : "+str(step0) 
+for i in range(7):
+    print str(name[i])+" : "+str(step[i])
 
 
 # In[32]:
+B=[[[] for i in range(1)] for j in range(7)];
+for i in range(len(name)):
+    B[i].append(step[i][0][0:5])
 
-B3=np.arange(5.);B2=np.arange(5.);B0=np.arange(5.)
+for i in range(7):
+    B[i].remove([])
 
-B3=step3[0:5]
-B2=step2[0:5]
-B0=step0[0:5]
-print "BOUNDS:\n"    
-print str(name[3])+" : "+str(B3) 
-print str(name[2])+" : "+str(B2) 
-print str(name[0])+" : "+str(B0) 
+print "BOUNDS:\n"
+for i in range(7):
+    print str(name[i])+" : "+str(B[i])
 
 
 # In[33]:
